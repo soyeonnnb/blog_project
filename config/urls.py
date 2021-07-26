@@ -10,4 +10,7 @@ urlpatterns = [
     path("create/", blogapp_views.create, name="create"),
     # Django FORM 을 이용해 블로그 객체 만들기
     path("djangonew/", blogapp_views.djangonew, name="djangonew"),
+    # Django modelFORM 을 이용해 블로그 객체 만들기
+    path("djangomodel/", blogapp_views.djangomodel, name="djangomodel"),
+    path("detail/<int:blog_id>", blogapp_views.detail, name="detail"),
 ]
