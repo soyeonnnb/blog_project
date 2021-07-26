@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
-from .models import Blog
-from .forms import BlogForm, BlogModelForm
+from .models import Blog, Comment
+from .forms import BlogForm, BlogModelForm, CommentForm
 
 
 def home(request):
@@ -41,8 +41,8 @@ def djangonew(request):
 
 
 def djangomodel(request):
-    if request.method == "POST":
-        form = BlogModelForm(request.POST)
+    if request.method == "POST" or request.method == "FILES":
+        form = BlogModelForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect("home")
@@ -53,4 +53,20 @@ def djangomodel(request):
 
 def detail(request, blog_id):
     blog_detail = get_object_or_404(Blog, pk=blog_id)
-    return render(request, "detail.html", {"blog_detail": blog_detail})
+
+    comment_form = CommentForm()
+    return render(
+        request,
+        "detail.html",
+        {"blog_detail": blog_detail, "comment_form": comment_form},
+    )
+
+
+def create_comment(request, blog_id):
+    filled_form = CommentForm(request.POST)
+
+    if filled_form.is_valid():
+        finished_form = filled_form.save(commit=False)
+        finished_form.post = get_object_or_404(Blog, pk=blog_id)
+        finished_form.save()
+    return redirect("detail", blog_id)
